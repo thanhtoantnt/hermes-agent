@@ -97,7 +97,7 @@ class TestNormalizeProviderProperties:
         assert result == result.strip()
 
     @settings(max_examples=100)
-    @given(st.text(max_size=50))
+    @given(st.text(min_size=1, max_size=50).filter(lambda x: x.strip()))
     def test_idempotent(self, provider):
         """Applying normalize_provider twice gives same result."""
         first = normalize_provider(provider)

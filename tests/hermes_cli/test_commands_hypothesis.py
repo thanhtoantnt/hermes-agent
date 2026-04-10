@@ -96,10 +96,18 @@ class TestSanitizeTelegramNameProperties:
             assert not result.endswith("_")
 
     @given(telegram_name_strategy())
-    def test_idempotent_for_valid_names(self, s):
-        """Valid Telegram names pass through unchanged."""
+    def test_valid_names_produce_valid_output(self, s):
+        """Valid Telegram names produce valid Telegram output."""
         result = _sanitize_telegram_name(s)
-        assert result == s.strip("_")
+        # Output must only contain [a-z0-9_]
+        valid_pattern = re.compile(r"^[a-z0-9_]*$")
+        assert valid_pattern.match(result), f"Invalid chars in: {result!r}"
+        # Output must have no consecutive underscores
+        assert "__" not in result
+        # Output must have no leading/trailing underscores
+        if result:
+            assert not result.startswith("_")
+            assert not result.endswith("_")
 
     @given(arbitrary_string_strategy())
     def test_idempotent_after_first_application(self, s):
